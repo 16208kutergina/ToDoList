@@ -3,10 +3,9 @@ package ru.nsu.fit.todolist
 import com.google.gson.Gson
 import java.io.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class TaskFileManager(private var fileName: String = "todo-list.json") {
+class TaskFileManager(private var fileName: String) {
     private val gson = Gson()
     private lateinit var scanner: Scanner
 
@@ -38,9 +37,4 @@ class TaskFileManager(private var fileName: String = "todo-list.json") {
         }
         return listTasks
     }
-}
-
-fun main() {
-    val split = "add 5 6 7 3".split(" ".toRegex(), 2)
-    println(split.toString())
 }
