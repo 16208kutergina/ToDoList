@@ -6,12 +6,12 @@ import ru.nsu.fit.todolist.handlers.DoneHandler
 import ru.nsu.fit.todolist.handlers.ListHandler
 import java.util.*
 
-class CommandRunner {
+class CommandRunner(fileName: String) {
     private val handlers = HashMap<String, Handler>()
+    private val taskFileManager = TaskFileManager(fileName)
 
-    fun run(command: Command): CommandExceptions {
-        val taskFileManager = TaskFileManager()
-        val handler = handlers[command.command] ?: return CommandExceptions.UNKNOWN_COMMAND
+    fun run(command: Command): ExecutionResult {
+        val handler = handlers[command.command] ?: return ExecutionResult.UNKNOWN_COMMAND
         return handler.handle(command, taskFileManager)
     }
 

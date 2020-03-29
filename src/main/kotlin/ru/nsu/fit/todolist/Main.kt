@@ -1,7 +1,8 @@
 package ru.nsu.fit.todolist
 
     fun main() {
-        val consoleReader = ConsoleReader()
         val inputStream = System.`in`
-        consoleReader.run(inputStream)
+        val fileName = "todo-list.json"
+        val programStarter = ProgramStarter(inputStream, fileName)
+        programStarter.start()
     }

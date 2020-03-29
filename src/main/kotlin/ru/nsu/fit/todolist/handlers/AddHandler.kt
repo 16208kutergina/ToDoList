@@ -4,16 +4,16 @@ import ru.nsu.fit.todolist.*
 import java.io.IOException
 
 class AddHandler : Handler {
-    override fun handle(command: Command, taskFileManager: TaskFileManager): CommandExceptions {
+    override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
         if(command.arguments.isEmpty()){
-            return CommandExceptions.UNNAMED_TASK
+            return ExecutionResult.UNNAMED_TASK
         }
         val task = Task(StatusTask.TODO, command.arguments)
         try {
             taskFileManager.write(task)
         }catch (e: IOException){
-            return CommandExceptions.FILE_PROBLEM
+            return ExecutionResult.FILE_PROBLEM
         }
-        return CommandExceptions.SUCCESS
+        return ExecutionResult.SUCCESS
     }
 }

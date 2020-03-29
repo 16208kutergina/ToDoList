@@ -18,23 +18,34 @@ class TaskFileManager(private var fileName: String) {
     }
 
     fun openForRead() {
-        scanner = Scanner(fileName)
+        val file = File(fileName)
+        scanner = Scanner(file)
+    }
+
+
+    fun hasNextRead() : Boolean{
+        return scanner.hasNext()
     }
 
     fun closeForRead() {
         scanner.close()
     }
 
-    fun readNext(count: Int): Array<Task?> {
-        val listTasks = arrayOfNulls<Task>(size = count)
+    fun readNextListTask(count: Int): List<Task> {
+        val listTasks = LinkedList<Task>()
         for (i in 0 until count) {
-            if (!scanner.hasNext()) {
-                break
-            }
-            val nextJson = scanner.nextLine()
-            val task = gson.fromJson(nextJson, Task::class.java)
-            listTasks[i] = task
+            val task = readNextTask() ?: break
+            listTasks.add(task)
         }
         return listTasks
+    }
+
+    private fun readNextTask(): Task? {
+        var task: Task? = null
+        if(scanner.hasNext()) {
+            val nextJson = scanner.nextLine()
+            task = gson.fromJson(nextJson, Task::class.java)
+        }
+        return task
     }
 }
