@@ -3,7 +3,7 @@ package ru.nsu.fit.todolist
 import java.io.InputStream
 import java.util.*
 
-class ProgramStarter(private val inputStream: InputStream, fileName: String = "todo-list.json") {
+class ProgramStarter(inputStream: InputStream, fileName: String = "todo-list.json") {
     private val commandRunner = CommandRunner(fileName)
     val scanner = Scanner(inputStream)
 
@@ -11,34 +11,30 @@ class ProgramStarter(private val inputStream: InputStream, fileName: String = "t
         var command: Command? = null
         do {
             val instructions = myReadLine(scanner) ?: continue
-            if(instructions.isEmpty()){
+            if (instructions.first().isEmpty()) {
                 continue
             }
             command = parseCommand(instructions)
-            if (command == null) {
-                println("add instruction") // todo write instruction
-                continue
-            }
             val executionResult = commandRunner.run(command)
-            if(executionResult != ExecutionResult.SUCCESS) {
-                println(executionResult.)
+            if (executionResult != ExecutionResult.SUCCESS) {
+                println(executionResult.text)
             }
         } while (command == null
             || command.command != "exit"
         )
     }
 
-    private fun parseCommand(instructions: List<String>): Command? {
-        return when {
-            instructions.size == 2 -> Command(
-                instructions.first(),
-                instructions.last()
-            )
-            instructions.size == 1 -> Command(
+    private fun parseCommand(instructions: List<String>): Command {
+        return if (instructions.size == 1) {
+            Command(
                 instructions.first(),
                 ""
             )
-            else -> null
+        } else {
+            Command(
+                instructions.first(),
+                instructions.last()
+            )
         }
     }
 

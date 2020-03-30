@@ -5,12 +5,12 @@ data class Task(
     var nameTask: String
 ){
     override fun toString(): String {
-        return "$nameTask  $status"
+        return "$status: $nameTask"
     }
 }
 
 
-enum class StatusTask(sign: String) {
-    TODO("*"),
-    DONE("v")
+enum class StatusTask {
+    TODO,
+    DONE
 }
