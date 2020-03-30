@@ -9,13 +9,16 @@ class ListHandler : Handler {
 
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
         taskFileManager.openForRead()
-        userDialog(command, taskFileManager)
+        val executionResult = userDialog(command, taskFileManager)
         taskFileManager.closeForRead()
-        return ExecutionResult.SUCCESS
+        return executionResult
     }
 
-    private fun userDialog(command: Command, taskFileManager: TaskFileManager) {
+    private fun userDialog(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
         val filterMode = determineFilterMode(command)
+        if(filterMode == FilterMode.UNDEFINED){
+            return ExecutionResult.UNKNOWN_MODE_SORT
+        }
         val scanner = Scanner(inputStream)
         val consoleReaderListTask = ConsoleReaderUserAnswer()
 
@@ -28,39 +31,30 @@ class ListHandler : Handler {
             if (readUserAnswer == UserAction.STOP) {
                 break
             }
-
         }
+        return ExecutionResult.SUCCESS
     }
 
-    private fun getFilteredList(
-        taskFileManager: TaskFileManager,
-        filterMode: Enum<*>
-    ): List<Pair<Int, Task>>? {
-        return taskFileManager
-            .getTaskSeq()
-            .mapIndexed{index, it -> Pair(index + 1, it)}
-            .filter { isFilterTask(filterMode, it.second) }
-            .chunked(countReadableTasks)
-            .firstOrNull()
-    }
-
-
-    private fun determineFilterMode(command: Command): Enum<*> {
+    private fun determineFilterMode(command: Command): FilterMode {
         return when (command.arguments) {
             "-todo" -> FilterMode.TODO
             "-done" -> FilterMode.DONE
             "" -> FilterMode.ALL
-            else -> ExecutionResult.UNKNOWN_MODE_SORT
+            else -> FilterMode.UNDEFINED
         }
     }
 
-    private fun isFilterTask(filterMode: Enum<*>, task: Task): Boolean {
-        return when (filterMode) {
-            FilterMode.ALL -> true
-            FilterMode.TODO -> task.status == StatusTask.TODO
-            FilterMode.DONE -> task.status == StatusTask.DONE
-            else -> false
-        }
+
+    private fun getFilteredList(
+        taskFileManager: TaskFileManager,
+        filterMode: FilterMode
+    ): List<Pair<Int, Task>>? {
+        return taskFileManager
+            .getTaskSeq()
+            .mapIndexed { index, it -> Pair(index + 1, it) }
+            .filter { filterMode.isAccept(it.second) }
+            .chunked(countReadableTasks)
+            .firstOrNull()
     }
 
     private fun printListTask(lastReadableTask: List<Pair<Int, Task>>) {
@@ -71,9 +65,25 @@ class ListHandler : Handler {
 
 
     enum class FilterMode {
-        ALL,
-        TODO,
-        DONE
+        ALL {
+            override fun isAccept(task: Task): Boolean
+                    = true
+        },
+        TODO {
+            override fun isAccept(task: Task): Boolean
+                    = task.status == StatusTask.TODO
+            }
+        ,
+        DONE {
+            override fun isAccept(task: Task): Boolean
+            = task.status == StatusTask.DONE
+        },
+        UNDEFINED {
+            override fun isAccept(task: Task): Boolean = false
+        }
+        ;
+
+        abstract fun isAccept(task: Task): Boolean
     }
 }
 
