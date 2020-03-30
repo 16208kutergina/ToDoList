@@ -21,7 +21,7 @@ class ProgramStarter(private val inputStream: InputStream, fileName: String = "t
             }
             val executionResult = commandRunner.run(command)
             if(executionResult != ExecutionResult.SUCCESS) {
-                println(executionResult)
+                println(executionResult.)
             }
         } while (command == null
             || command.command != "exit"
@@ -47,6 +47,7 @@ class ProgramStarter(private val inputStream: InputStream, fileName: String = "t
         return scanner.nextLine()
             .trim()
             .split(" ".toRegex(), 2)
+            .map { it.trim() }
     }
 
 }
