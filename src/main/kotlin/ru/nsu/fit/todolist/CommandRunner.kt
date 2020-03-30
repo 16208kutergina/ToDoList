@@ -1,9 +1,6 @@
 package ru.nsu.fit.todolist
 
-import ru.nsu.fit.todolist.handlers.AddHandler
-import ru.nsu.fit.todolist.handlers.DeleteHandler
-import ru.nsu.fit.todolist.handlers.DoneHandler
-import ru.nsu.fit.todolist.handlers.ListHandler
+import ru.nsu.fit.todolist.handlers.*
 import java.util.*
 
 class CommandRunner(fileName: String) {
@@ -20,5 +17,6 @@ class CommandRunner(fileName: String) {
         handlers["delete"] = DeleteHandler()
         handlers["done"] = DoneHandler()
         handlers["list"] = ListHandler()
+        handlers["exit"] = ExitHandler()
     }
 }

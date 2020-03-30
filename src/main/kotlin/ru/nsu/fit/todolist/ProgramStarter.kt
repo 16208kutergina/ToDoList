@@ -5,23 +5,23 @@ import java.util.*
 
 class ProgramStarter(inputStream: InputStream, fileName: String = "todo-list.json") {
     private val commandRunner = CommandRunner(fileName)
-    val scanner = Scanner(inputStream)
+    private val scanner = Scanner(inputStream)
 
     fun start() {
-        var command: Command? = null
-        do {
+        while(true){
             val instructions = myReadLine(scanner) ?: continue
             if (instructions.first().isEmpty()) {
                 continue
             }
-            command = parseCommand(instructions)
+            val command = parseCommand(instructions)
             val executionResult = commandRunner.run(command)
+            if(executionResult == ExecutionResult.EXIT){
+                break
+            }
             if (executionResult != ExecutionResult.SUCCESS) {
                 println(executionResult.text)
             }
-        } while (command == null
-            || command.command != "exit"
-        )
+        }
     }
 
     private fun parseCommand(instructions: List<String>): Command {
