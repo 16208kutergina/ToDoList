@@ -5,12 +5,9 @@ import java.util.*
 
 class ListHandler : Handler {
     private val countReadableTasks = 10
-
     private var inputStream = System.`in`
-    private var indexTask = 0
 
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
-        indexTask = 0
         taskFileManager.openForRead()
         userDialog(command, taskFileManager)
         taskFileManager.closeForRead()
@@ -38,10 +35,11 @@ class ListHandler : Handler {
     private fun getFilteredList(
         taskFileManager: TaskFileManager,
         filterMode: Enum<*>
-    ): List<Task>? {
+    ): List<Pair<Int, Task>>? {
         return taskFileManager
             .getTaskSeq()
-            .filter { isFilterTask(filterMode, it) }
+            .mapIndexed{index, it -> Pair(index + 1, it)}
+            .filter { isFilterTask(filterMode, it.second) }
             .chunked(countReadableTasks)
             .firstOrNull()
     }
@@ -65,10 +63,9 @@ class ListHandler : Handler {
         }
     }
 
-    private fun printListTask(lastReadableTask: List<Task?>) {
+    private fun printListTask(lastReadableTask: List<Pair<Int, Task>>) {
         for (it in lastReadableTask) {
-            indexTask++
-            println("$indexTask. ${it.toString()}")
+            println("${it.first}. ${it.second}")
         }
     }
 
