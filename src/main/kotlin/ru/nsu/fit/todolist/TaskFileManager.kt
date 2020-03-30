@@ -10,6 +10,13 @@ class TaskFileManager(private var fileName: String) {
     private lateinit var scanner: Scanner
 
 
+    private fun replaceFile(nameTmpFile: String) {
+        val file = File(fileName)
+        val tmpFile = File(nameTmpFile)
+        file.delete()
+        tmpFile.renameTo(file)
+    }
+
     fun write(task: Task) {
         val fileWriter = FileWriter(fileName, true)
         val json = gson.toJson(task)
@@ -41,15 +48,13 @@ class TaskFileManager(private var fileName: String) {
     fun closeForRead() {
         scanner.close()
     }
+
     //-----------------------------------------------------------------
 
     fun delete(listNumberTasks: List<Int>) {
         val nameTmpFile = "tmp_$fileName"
         writeFileWithoutDelete(nameTmpFile, listNumberTasks)
-        val file = File(fileName)
-        val tmpFile = File(nameTmpFile)
-        file.delete()
-        tmpFile.renameTo(file)
+        replaceFile(nameTmpFile)
     }
 
     private fun writeFileWithoutDelete(nameTmpFile: String, listNumberTasks: List<Int>) {
@@ -64,6 +69,31 @@ class TaskFileManager(private var fileName: String) {
                 continue
             }
             tmpfileWriter.write("$nextTaskJson\n")
+        }
+        closeForRead()
+        tmpfileWriter.close()
+    }
+
+    //------------------------------------------------------------
+
+    fun markDone(listNumberTasks: List<Int>) {
+        val nameTmpFile = "tmp_$fileName"
+        writeFileChangeStatus(nameTmpFile, listNumberTasks, StatusTask.DONE)
+        replaceFile(nameTmpFile)
+    }
+
+    private fun writeFileChangeStatus(nameTmpFile: String, listNumberTasks: List<Int>, status: StatusTask) {
+        openForRead()
+        val tmpfileWriter = FileWriter(nameTmpFile, true)
+        var counterTask = 0
+        while (scanner.hasNext()){
+            counterTask++
+            val nextTask = readNextTask()
+            if(listNumberTasks.contains(counterTask)){
+                nextTask?.status = status
+            }
+            val json = gson.toJson(nextTask)
+            tmpfileWriter.write("$json\n")
         }
         closeForRead()
         tmpfileWriter.close()
