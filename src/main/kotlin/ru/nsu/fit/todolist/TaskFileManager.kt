@@ -22,22 +22,14 @@ class TaskFileManager(private var fileName: String) {
         scanner = Scanner(file)
     }
 
-
-    fun hasNextRead() : Boolean{
-        return scanner.hasNext()
+    fun getTaskSeq(): Sequence<Task> {
+        return generateSequence {
+            readNextTask()
+        }
     }
 
     fun closeForRead() {
         scanner.close()
-    }
-
-    fun readNextListTask(count: Int): List<Task> {
-        val listTasks = LinkedList<Task>()
-        for (i in 0 until count) {
-            val task = readNextTask() ?: break
-            listTasks.add(task)
-        }
-        return listTasks
     }
 
     private fun readNextTask(): Task? {

@@ -18,16 +18,15 @@ class ListHandler : Handler {
     }
 
     private fun userDialog(command: Command, taskFileManager: TaskFileManager) {
-        val sortMode = determineSortMode(command)
+        val filterMode = determineFilterMode(command)
         val scanner = Scanner(inputStream)
         val consoleReaderListTask = ConsoleReaderUserAnswer()
 
-        while (true) {
-            val readyListTask = getReadyListTask(taskFileManager, sortMode)
-            printListTask(readyListTask)
-            if (!taskFileManager.hasNextRead()) {
-                break
-            }
+        var listTask = getFilteredList(taskFileManager, filterMode)
+        while (listTask != null) {
+            printListTask(listTask)
+            listTask = getFilteredList(taskFileManager, filterMode)
+            listTask ?: break
             val readUserAnswer = consoleReaderListTask.askUserForContinue(scanner)
             if (readUserAnswer == UserAction.STOP) {
                 break
@@ -36,37 +35,33 @@ class ListHandler : Handler {
         }
     }
 
-    private fun determineSortMode(command: Command): Enum<*> {
-        val sortMode = when (command.arguments) {
-            "-todo" -> SortMode.TODO
-            "-done" -> SortMode.DONE
-            "" -> SortMode.ALL
+    private fun getFilteredList(
+        taskFileManager: TaskFileManager,
+        filterMode: Enum<*>
+    ): List<Task>? {
+        return taskFileManager
+            .getTaskSeq()
+            .filter { isFilterTask(filterMode, it) }
+            .chunked(countReadableTasks)
+            .firstOrNull()
+    }
+
+
+    private fun determineFilterMode(command: Command): Enum<*> {
+        return when (command.arguments) {
+            "-todo" -> FilterMode.TODO
+            "-done" -> FilterMode.DONE
+            "" -> FilterMode.ALL
             else -> ExecutionResult.UNKNOWN_MODE_SORT
         }
-        return sortMode
     }
 
-
-    private fun getReadyListTask(taskFileManager: TaskFileManager, sortMode: Enum<*>): List<Task?> {
-        val lastReadableTask = LinkedList<Task?>()
-        while (lastReadableTask.size != countReadableTasks) {
-            val count = countReadableTasks - lastReadableTask.size
-            val readNext = taskFileManager.readNextListTask(count)
-            if (readNext.isEmpty()) {
-                break
-            }
-            val sortReadableTask = sortReadableTask(sortMode, readNext)
-            lastReadableTask.addAll(sortReadableTask)
-        }
-        return lastReadableTask
-    }
-
-    private fun sortReadableTask(sortMode: Enum<*>, readNext: List<Task>): List<Task> {
-        return when (sortMode) {
-            SortMode.ALL -> readNext
-            SortMode.TODO -> readNext.filter { it.status == StatusTask.TODO }
-            SortMode.DONE -> readNext.filter { it.status == StatusTask.DONE }
-            else -> emptyList()
+    private fun isFilterTask(filterMode: Enum<*>, task: Task): Boolean {
+        return when (filterMode) {
+            FilterMode.ALL -> true
+            FilterMode.TODO -> task.status == StatusTask.TODO
+            FilterMode.DONE -> task.status == StatusTask.DONE
+            else -> false
         }
     }
 
@@ -78,7 +73,7 @@ class ListHandler : Handler {
     }
 
 
-    enum class SortMode {
+    enum class FilterMode {
         ALL,
         TODO,
         DONE
