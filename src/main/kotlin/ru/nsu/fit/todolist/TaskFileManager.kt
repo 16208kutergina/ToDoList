@@ -17,6 +17,7 @@ class TaskFileManager(private var fileName: String) {
         fileWriter.close()
     }
 
+    //---------------------------------------------------------------------
     fun openForRead() {
         val file = File(fileName)
         scanner = Scanner(file)
@@ -28,16 +29,43 @@ class TaskFileManager(private var fileName: String) {
         }
     }
 
-    fun closeForRead() {
-        scanner.close()
-    }
-
     private fun readNextTask(): Task? {
         var task: Task? = null
-        if(scanner.hasNext()) {
+        if (scanner.hasNext()) {
             val nextJson = scanner.nextLine()
             task = gson.fromJson(nextJson, Task::class.java)
         }
         return task
+    }
+
+    fun closeForRead() {
+        scanner.close()
+    }
+    //-----------------------------------------------------------------
+
+    fun delete(listNumberTasks: List<Int>) {
+        val nameTmpFile = "tmp_$fileName"
+        writeFileWithoutDelete(nameTmpFile, listNumberTasks)
+        val file = File(fileName)
+        val tmpFile = File(nameTmpFile)
+        file.delete()
+        tmpFile.renameTo(file)
+    }
+
+    private fun writeFileWithoutDelete(nameTmpFile: String, listNumberTasks: List<Int>) {
+        openForRead()
+        val tmpfileWriter = FileWriter(nameTmpFile, true)
+        var counterTask = 0
+        var nextTaskJson = ""
+        while (scanner.hasNext()) {
+            nextTaskJson = scanner.nextLine()
+            counterTask++
+            if (listNumberTasks.contains(counterTask)) {
+                continue
+            }
+            tmpfileWriter.write("$nextTaskJson\n")
+        }
+        closeForRead()
+        tmpfileWriter.close()
     }
 }

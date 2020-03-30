@@ -7,7 +7,16 @@ import ru.nsu.fit.todolist.TaskFileManager
 
 class DeleteHandler : Handler {
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
-        TODO("Not yet implemented")
+        try {
+            val arguments = command.arguments
+                .split(" ")
+                .map { it.toInt() }
+            if (arguments.isNotEmpty())
+                taskFileManager.delete(arguments)
+        } catch (e: NumberFormatException) {
+            return ExecutionResult.WRONG_FORMAT_ARGUMENTS
+        }
+        return ExecutionResult.SUCCESS
     }
 
 }
