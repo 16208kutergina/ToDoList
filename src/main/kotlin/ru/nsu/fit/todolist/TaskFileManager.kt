@@ -26,6 +26,9 @@ class TaskFileManager(private var fileName: String) {
 
     fun openForRead() {
         val file = File(fileName)
+        if (!file.exists()) {
+            file.createNewFile()
+        }
         scanner = Scanner(file)
     }
 
@@ -37,9 +40,13 @@ class TaskFileManager(private var fileName: String) {
 
     private fun readNextTask(): Task? {
         var task: Task? = null
-        if (scanner.hasNext()) {
-            val nextJson = scanner.nextLine()
-            task = gson.fromJson(nextJson, Task::class.java)
+        try {
+            if (scanner.hasNext()) {
+                val nextJson = scanner.nextLine()
+                task = gson.fromJson(nextJson, Task::class.java)
+            }
+        } catch (e: IllegalStateException) {
+            //залогировать
         }
         return task
     }
@@ -83,10 +90,10 @@ class TaskFileManager(private var fileName: String) {
         openForRead()
         val tmpfileWriter = FileWriter(nameTmpFile, true)
         var counterTask = 0
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             counterTask++
             val nextTask = readNextTask()
-            if(listNumberTasks.contains(counterTask)){
+            if (listNumberTasks.contains(counterTask)) {
                 nextTask?.status = status
             }
             val json = gson.toJson(nextTask)

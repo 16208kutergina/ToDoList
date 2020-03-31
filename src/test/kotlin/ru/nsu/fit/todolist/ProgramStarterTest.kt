@@ -2,13 +2,11 @@ package ru.nsu.fit.todolist
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import java.io.PrintStream
+import java.io.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ProgramStarterTest {
+    private val fileName = "testFile.json"
     private lateinit var outContent: ByteArrayOutputStream
     private val originalOut = System.out
 
@@ -21,7 +19,7 @@ internal class ProgramStarterTest {
     @Test
     fun startAdd() {
         val inputStream = "add my task\nexit".byteInputStream()
-        val programStarter = ProgramStarter(inputStream, "test-todo-list.json")
+        val programStarter = ProgramStarter(inputStream, fileName)
         programStarter.start()
         inputStream.close()
         val out = outContent.toString()
@@ -43,5 +41,7 @@ internal class ProgramStarterTest {
     @AfterAll
     fun restoreStreams(){
         System.setOut(originalOut)
+        val file = File(fileName)
+        file.delete()
     }
 }
