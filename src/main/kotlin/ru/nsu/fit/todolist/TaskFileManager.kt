@@ -24,7 +24,6 @@ class TaskFileManager(private var fileName: String) {
         fileWriter.close()
     }
 
-    //---------------------------------------------------------------------
     fun openForRead() {
         val file = File(fileName)
         scanner = Scanner(file)
@@ -49,7 +48,6 @@ class TaskFileManager(private var fileName: String) {
         scanner.close()
     }
 
-    //-----------------------------------------------------------------
 
     fun delete(listNumberTasks: List<Int>) {
         val nameTmpFile = "tmp_$fileName"
@@ -74,7 +72,6 @@ class TaskFileManager(private var fileName: String) {
         tmpfileWriter.close()
     }
 
-    //------------------------------------------------------------
 
     fun markDone(listNumberTasks: List<Int>) {
         val nameTmpFile = "tmp_$fileName"

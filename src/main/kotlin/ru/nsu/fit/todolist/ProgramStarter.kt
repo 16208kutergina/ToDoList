@@ -22,6 +22,7 @@ class ProgramStarter(inputStream: InputStream, fileName: String = "todo-list.jso
                 println(executionResult.text)
             }
         }
+        scanner.close()
     }
 
     private fun parseCommand(instructions: List<String>): Command {
