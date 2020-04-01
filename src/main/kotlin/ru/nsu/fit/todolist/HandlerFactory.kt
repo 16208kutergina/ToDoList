@@ -3,13 +3,12 @@ package ru.nsu.fit.todolist
 import ru.nsu.fit.todolist.handlers.*
 import java.util.*
 
-class CommandRunner(fileName: String) {
+class HandlerFactory() {
     private val handlers = HashMap<String, Handler>()
-    private val taskFileManager = TaskFileManager(fileName)
+    private val helpHandler = HelpHandler()
 
-    fun run(command: Command): ExecutionResult {
-        val handler = handlers[command.command] ?: return ExecutionResult.UNKNOWN_COMMAND
-        return handler.handle(command, taskFileManager)
+    fun getHandler(command: Command): Handler {
+        return handlers.getOrDefault(command.nameCommand, helpHandler)
     }
 
     init {
@@ -18,5 +17,6 @@ class CommandRunner(fileName: String) {
         handlers["done"] = DoneHandler()
         handlers["list"] = ListHandler()
         handlers["exit"] = ExitHandler()
+        handlers["help"] = helpHandler
     }
 }

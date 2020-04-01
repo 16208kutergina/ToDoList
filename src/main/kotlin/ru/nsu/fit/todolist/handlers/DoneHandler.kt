@@ -4,6 +4,7 @@ import ru.nsu.fit.todolist.Command
 import ru.nsu.fit.todolist.ExecutionResult
 import ru.nsu.fit.todolist.Handler
 import ru.nsu.fit.todolist.TaskFileManager
+import java.io.IOException
 
 class DoneHandler : Handler {
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
@@ -15,6 +16,8 @@ class DoneHandler : Handler {
                 taskFileManager.markDone(arguments)
         } catch (e: NumberFormatException) {
             return ExecutionResult.WRONG_FORMAT_ARGUMENTS
+        }catch (e: IOException){
+            return ExecutionResult.FILE_PROBLEM
         }
         return ExecutionResult.SUCCESS
     }
