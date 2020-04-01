@@ -4,12 +4,12 @@ import java.util.*
 
 class ConsoleReaderUserAnswer {
 
-    fun askUserForContinue(scanner: Scanner): UserAction {
+    fun askUserForContinue(): UserAction {
         println("Write \"next\" or \"stop\"")
-        var nextLine = scanner.nextLine()
+        var nextLine = readLine()
         while (nextLine != "next" && nextLine != "stop") {
             println("Write \"next\" or \"stop\"")
-            nextLine = scanner.nextLine()
+            nextLine = readLine()
         }
         return if (nextLine == "next") {
             UserAction.NEXT

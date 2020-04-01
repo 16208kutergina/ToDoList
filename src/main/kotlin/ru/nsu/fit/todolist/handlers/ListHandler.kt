@@ -5,7 +5,6 @@ import java.util.*
 
 class ListHandler : Handler {
     private val countReadableTasks = 10
-    private var inputStream = System.`in`
 
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
         taskFileManager.openForRead()
@@ -19,7 +18,6 @@ class ListHandler : Handler {
         if(filterMode == FilterMode.UNDEFINED){
             return ExecutionResult.UNKNOWN_MODE_SORT
         }
-        val scanner = Scanner(inputStream)
         val consoleReaderListTask = ConsoleReaderUserAnswer()
 
         var listTask = getFilteredList(taskFileManager, filterMode)
@@ -27,7 +25,7 @@ class ListHandler : Handler {
             printListTask(listTask)
             listTask = getFilteredList(taskFileManager, filterMode)
             listTask ?: break
-            val readUserAnswer = consoleReaderListTask.askUserForContinue(scanner)
+            val readUserAnswer = consoleReaderListTask.askUserForContinue()
             if (readUserAnswer == UserAction.STOP) {
                 break
             }

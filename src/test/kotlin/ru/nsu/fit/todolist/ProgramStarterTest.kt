@@ -19,7 +19,7 @@ internal class ProgramStarterTest {
     @Test
     fun startAdd() {
         val inputStream = "add my task\nexit".byteInputStream()
-        val programStarter = ProgramStarter(inputStream, fileName)
+        val programStarter = ProgramStarter(fileName)
         programStarter.start()
         inputStream.close()
         val out = outContent.toString()
@@ -30,7 +30,7 @@ internal class ProgramStarterTest {
     @Test
     fun startEmpty() {
         val inputStream = "\nexit".byteInputStream()
-        val programStarter = ProgramStarter(inputStream, "test-todo-list.json")
+        val programStarter = ProgramStarter("test-todo-list.json")
         programStarter.start()
         inputStream.close()
         val out = outContent.toString()
