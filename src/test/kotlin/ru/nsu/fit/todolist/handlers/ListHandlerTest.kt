@@ -75,6 +75,7 @@ internal class ListHandlerTest : ConsoleOutputTest() {
         assertEquals(ExecutionResult.SUCCESS, executionResult)
     }
 
+    @Test
     fun testListStop() {
         val command = Command("list", "")
         every { consoleReaderUserAnswer.askUserForContinue() } returns UserAction.STOP

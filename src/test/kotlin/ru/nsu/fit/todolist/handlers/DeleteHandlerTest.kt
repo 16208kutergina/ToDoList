@@ -4,14 +4,10 @@ import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import ru.nsu.fit.todolist.*
-
-import java.io.File
-import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class DeleteHandlerTest {

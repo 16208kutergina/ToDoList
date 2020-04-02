@@ -1,6 +1,6 @@
 package ru.nsu.fit.todolist.handlers
 
-public class ConsoleReaderUserAnswer {
+class ConsoleReaderUserAnswer {
 
     fun askUserForContinue(): UserAction {
         println("Write \"next\" or \"stop\"")

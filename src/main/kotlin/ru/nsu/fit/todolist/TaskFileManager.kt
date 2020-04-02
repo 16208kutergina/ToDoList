@@ -59,19 +59,19 @@ class TaskFileManager(private var fileName: String) {
 
     private fun writeFileWithoutDelete(nameTmpFile: String, listNumberTasks: List<Int>) {
         openForRead()
-        val tmpfileWriter = FileWriter(nameTmpFile, true)
+        val tmpFileWriter = FileWriter(nameTmpFile, true)
         var counterTask = 0
-        var nextTaskJson = ""
+        var nextTaskJson:String
         while (scanner.hasNext()) {
             nextTaskJson = scanner.nextLine()
             counterTask++
             if (listNumberTasks.contains(counterTask)) {
                 continue
             }
-            tmpfileWriter.write("$nextTaskJson\n")
+            tmpFileWriter.write("$nextTaskJson\n")
         }
         closeForRead()
-        tmpfileWriter.close()
+        tmpFileWriter.close()
     }
 
 
@@ -83,7 +83,7 @@ class TaskFileManager(private var fileName: String) {
 
     private fun writeFileChangeStatus(nameTmpFile: String, listNumberTasks: List<Int>, status: StatusTask) {
         openForRead()
-        val tmpfileWriter = FileWriter(nameTmpFile, true)
+        val tmpFileWriter = FileWriter(nameTmpFile, true)
         var counterTask = 0
         while (scanner.hasNext()) {
             counterTask++
@@ -92,9 +92,9 @@ class TaskFileManager(private var fileName: String) {
                 nextTask?.status = status
             }
             val json = gson.toJson(nextTask)
-            tmpfileWriter.write("$json\n")
+            tmpFileWriter.write("$json\n")
         }
         closeForRead()
-        tmpfileWriter.close()
+        tmpFileWriter.close()
     }
 }

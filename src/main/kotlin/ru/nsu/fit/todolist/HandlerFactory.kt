@@ -3,7 +3,7 @@ package ru.nsu.fit.todolist
 import ru.nsu.fit.todolist.handlers.*
 import java.util.*
 
-class HandlerFactory() {
+class HandlerFactory {
     private val handlers = HashMap<String, Handler>()
     private val helpHandler = HelpHandler()
 

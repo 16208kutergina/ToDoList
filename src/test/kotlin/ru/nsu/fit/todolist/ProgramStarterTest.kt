@@ -5,10 +5,6 @@ import io.mockk.mockk
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import ru.nsu.fit.todolist.handlers.ConsoleOutputTest
-import ru.nsu.fit.todolist.handlers.ExitHandler
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.io.FileWriter
 
 internal class ProgramStarterTest : ConsoleOutputTest() {
     private val taskFileManager = mockk<TaskFileManager>()
@@ -41,9 +37,9 @@ internal class ProgramStarterTest : ConsoleOutputTest() {
             "\nexit\n".byteInputStream()
         System.setIn(inputStream)
         programStarter.start()
-        val outputText = outputStream.toString().removePrefix(helpText).trim()
+        val outputText = outputStream.toString()
         inputStream.close()
-        assertEquals("write command:>write command:>", outputText)
+        assertEquals("${helpText}\r\nwrite command:>write command:>", outputText)
     }
 
     @Test
@@ -52,8 +48,8 @@ internal class ProgramStarterTest : ConsoleOutputTest() {
         System.setIn(inputStream)
         inputStream.close()
         programStarter.start()
-        val outputText = outputStream.toString().removePrefix(helpText).trim()
-        assertEquals("write command:>", outputText)
+        val outputText = outputStream.toString()
+        assertEquals("${helpText}\r\nwrite command:>", outputText)
     }
 
     @Test
@@ -62,9 +58,9 @@ internal class ProgramStarterTest : ConsoleOutputTest() {
             "exit\n".byteInputStream()
         System.setIn(inputStream)
         programStarter.start()
-        val outputText = outputStream.toString().removePrefix(helpText).trim()
+        val outputText = outputStream.toString()
         inputStream.close()
-        assertEquals("write command:>", outputText)
+        assertEquals("${helpText}\r\nwrite command:>", outputText)
     }
 
     @Test
@@ -74,9 +70,9 @@ internal class ProgramStarterTest : ConsoleOutputTest() {
             "list\nexit\n".byteInputStream()
         System.setIn(inputStream)
         programStarter.start()
-        val outputText = outputStream.toString().removePrefix(helpText).trim()
+        val outputText = outputStream.toString()
         inputStream.close()
-        assertEquals("write command:>write command:>write command:>", outputText)
+        assertEquals("${helpText}\r\nwrite command:>write command:>write command:>", outputText)
     }
 
     @Test
@@ -86,9 +82,10 @@ internal class ProgramStarterTest : ConsoleOutputTest() {
             "abracadabra\nexit\n".byteInputStream()
         System.setIn(inputStream)
         programStarter.start()
-        val outputText = outputStream.toString().replaceFirst(helpText,"").trim()
+        val outputText = outputStream.toString()
         inputStream.close()
-        assertEquals("write command:>write command:>write command:>", outputText)
+        assertEquals("${helpText}\r\nwrite command:>write command:>write command:>", outputText)
+
     }
 
     @AfterAll

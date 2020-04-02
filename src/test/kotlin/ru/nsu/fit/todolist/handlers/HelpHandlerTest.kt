@@ -38,7 +38,7 @@ internal class HelpHandlerTest : ConsoleOutputTest() {
         val command = Command("abracadabra", "")
         val executionResult = helpHandler.handle(command, taskFileManager)
         assertEquals(ExecutionResult.UNKNOWN_COMMAND, executionResult)
-        assertEquals(helpText, outputStream.toString().trimIndent())
+        assertEquals("${ExecutionResult.UNKNOWN_COMMAND.text}\n$helpText", outputStream.toString().trimIndent())
     }
 
 }
