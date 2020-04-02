@@ -13,11 +13,13 @@ class DeleteHandler : Handler {
                 .split(" ")
                 .map { it.toInt() }
             if (arguments.isNotEmpty())
-                taskFileManager.delete(arguments)
+                return taskFileManager.delete(
+                    arguments,
+                    ExecutionResult.FILE_PROBLEM,
+                    ExecutionResult.SUCCESS
+                )
         } catch (e: NumberFormatException) {
             return ExecutionResult.WRONG_FORMAT_ARGUMENTS
-        }catch (e: IOException){
-            return ExecutionResult.FILE_PROBLEM
         }
         return ExecutionResult.SUCCESS
     }

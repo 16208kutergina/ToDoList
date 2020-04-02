@@ -13,11 +13,13 @@ class DoneHandler : Handler {
                 .split(" ")
                 .map { it.toInt() }
             if (arguments.isNotEmpty())
-                taskFileManager.markDone(arguments)
+                return taskFileManager.markDone(
+                    arguments,
+                    ExecutionResult.FILE_PROBLEM,
+                    ExecutionResult.SUCCESS
+                )
         } catch (e: NumberFormatException) {
             return ExecutionResult.WRONG_FORMAT_ARGUMENTS
-        }catch (e: IOException){
-            return ExecutionResult.FILE_PROBLEM
         }
         return ExecutionResult.SUCCESS
     }

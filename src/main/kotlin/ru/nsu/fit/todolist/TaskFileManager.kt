@@ -16,19 +16,33 @@ class TaskFileManager(private var fileName: String) {
         tmpFile.renameTo(file)
     }
 
-    fun write(task: Task) {
-        val fileWriter = FileWriter(fileName, true)
-        val json = gson.toJson(task)
-        fileWriter.write("$json\n")
-        fileWriter.close()
+    fun <T> write(task: Task, failReturn: T, success: T): T {
+        var fileWriter: FileWriter? = null
+        return try {
+            fileWriter = FileWriter(fileName, true)
+            val json = gson.toJson(task)
+            fileWriter.write("$json\n")
+            success
+        } catch (e: IOException) {
+            failReturn
+        } finally {
+            fileWriter?.close()
+        }
     }
 
-    fun openForRead() {
-        val file = File(fileName)
-        if (!file.exists()) {
-            file.createNewFile()
+    fun <T> read(failReturn: T, callback: () -> T): T {
+        return try {
+            val file = File(fileName)
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            scanner = Scanner(file)
+            callback()
+        } catch (e: IOException) {
+            failReturn
+        } finally {
+            scanner.close()
         }
-        scanner = Scanner(file)
     }
 
     fun getTaskSequence(): Sequence<Task> {
@@ -39,62 +53,79 @@ class TaskFileManager(private var fileName: String) {
 
     private fun readNextTask(): Task? {
         var task: Task? = null
-            if (scanner.hasNext()) {
-                val nextJson = scanner.nextLine()
-                task = gson.fromJson(nextJson, Task::class.java)
-            }
+        if (scanner.hasNext()) {
+            val nextJson = scanner.nextLine()
+            task = gson.fromJson(nextJson, Task::class.java)
+        }
         return task
     }
 
-    fun closeForRead() {
-        scanner.close()
-    }
 
-
-    fun delete(listNumberTasks: List<Int>) {
+    fun <T> delete(listNumberTasks: List<Int>, failReturn: T, success: T) : T {
         val nameTmpFile = "tmp_$fileName"
-        writeFileWithoutDelete(nameTmpFile, listNumberTasks)
+        val executionStatus = writeNewFileWithoutDelTask(
+            nameTmpFile,
+            listNumberTasks,
+            failReturn,
+            success
+        )
         replaceFile(nameTmpFile)
+        return executionStatus
     }
 
-    private fun writeFileWithoutDelete(nameTmpFile: String, listNumberTasks: List<Int>) {
-        openForRead()
-        val tmpFileWriter = FileWriter(nameTmpFile, true)
-        var counterTask = 0
-        var nextTaskJson:String
-        while (scanner.hasNext()) {
-            nextTaskJson = scanner.nextLine()
-            counterTask++
-            if (listNumberTasks.contains(counterTask)) {
-                continue
+    private fun <T> writeNewFileWithoutDelTask(
+        nameTmpFile: String,
+        listNumberTasks: List<Int>,
+        failReturn: T,
+        success: T
+    ): T {
+        return read(failReturn, {
+            val tmpFileWriter = FileWriter(nameTmpFile, true)
+            var counterTask = 0
+            var nextTaskJson: String
+            while (scanner.hasNext()) {
+                nextTaskJson = scanner.nextLine()
+                counterTask++
+                if (listNumberTasks.contains(counterTask)) {
+                    continue
+                }
+                tmpFileWriter.write("$nextTaskJson\n")
             }
-            tmpFileWriter.write("$nextTaskJson\n")
-        }
-        closeForRead()
-        tmpFileWriter.close()
+            tmpFileWriter.close()
+            success
+        })
     }
 
 
-    fun markDone(listNumberTasks: List<Int>) {
+    private fun <T> writeNewFileChangeStatus(
+        nameTmpFile: String,
+        listNumberTasks: List<Int>,
+        status: StatusTask,
+        failReturn: T,
+        success: T
+    ): T {
+        return read(failReturn, {
+            val tmpFileWriter = FileWriter(nameTmpFile, true)
+            var counterTask = 0
+            while (scanner.hasNext()) {
+                counterTask++
+                val nextTask = readNextTask()
+                if (listNumberTasks.contains(counterTask)) {
+                    nextTask?.status = status
+                }
+                val json = gson.toJson(nextTask)
+                tmpFileWriter.write("$json\n")
+            }
+            tmpFileWriter.close()
+            success
+        })
+    }
+
+    fun <T> markDone(listNumberTasks: List<Int>, failReturn: T, success: T): T {
         val nameTmpFile = "tmp_$fileName"
-        writeFileChangeStatus(nameTmpFile, listNumberTasks, StatusTask.DONE)
+        val executionStatus =
+            writeNewFileChangeStatus(nameTmpFile, listNumberTasks, StatusTask.DONE, failReturn, success)
         replaceFile(nameTmpFile)
-    }
-
-    private fun writeFileChangeStatus(nameTmpFile: String, listNumberTasks: List<Int>, status: StatusTask) {
-        openForRead()
-        val tmpFileWriter = FileWriter(nameTmpFile, true)
-        var counterTask = 0
-        while (scanner.hasNext()) {
-            counterTask++
-            val nextTask = readNextTask()
-            if (listNumberTasks.contains(counterTask)) {
-                nextTask?.status = status
-            }
-            val json = gson.toJson(nextTask)
-            tmpFileWriter.write("$json\n")
-        }
-        closeForRead()
-        tmpFileWriter.close()
+        return executionStatus
     }
 }

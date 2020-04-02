@@ -5,15 +5,10 @@ import java.io.IOException
 
 class AddHandler : Handler {
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
-        if(command.arguments.isEmpty()){
+        if (command.arguments.isEmpty()) {
             return ExecutionResult.UNNAMED_TASK
         }
         val task = Task(StatusTask.TODO, command.arguments)
-        try {
-            taskFileManager.write(task)
-        }catch (e: IOException){
-            return ExecutionResult.FILE_PROBLEM
-        }
-        return ExecutionResult.SUCCESS
+        return taskFileManager.write(task, ExecutionResult.FILE_PROBLEM, ExecutionResult.SUCCESS)
     }
 }
