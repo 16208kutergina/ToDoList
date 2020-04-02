@@ -1,47 +1,100 @@
 package ru.nsu.fit.todolist
 
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import java.io.*
+import ru.nsu.fit.todolist.handlers.ConsoleOutputTest
+import ru.nsu.fit.todolist.handlers.ExitHandler
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.FileWriter
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class ProgramStarterTest {
-    private val fileName = "testFile.json"
-    private lateinit var outContent: ByteArrayOutputStream
-    private val originalOut = System.out
+internal class ProgramStarterTest : ConsoleOutputTest() {
+    private val taskFileManager = mockk<TaskFileManager>()
+    private val handlerFactory = mockk<HandlerFactory>()
+    private val programStarter = ProgramStarter(taskFileManager, handlerFactory)
+    private val originalIn = System.`in`
+    private val handler = mockk<Handler>()
+    private val helpText = """
+    help - print instruction            
+    add <name task> - add new task
+    done <number_task1 number_task2 ...> - mark tasks DONE
+    delete <number_task1 number_task2 ...> - delete tasks
+    list        - print all tasks
+         -done  - print DONE tasks
+         -todo  - print TODO tasks
+                next - next part(10) tasks
+                stop - return to main console
+    exit - exit from application
+            """.trimIndent()
 
-    @BeforeEach
-    fun setNewByteArray(){
-        outContent = ByteArrayOutputStream()
-        System.setOut(PrintStream(outContent))
+    @BeforeAll
+    fun setHandle() {
+        every { handlerFactory.getHandler(any()) } returns handler
+        every { handler.handle(Command("exit", ""), taskFileManager) } returns ExecutionResult.EXIT
     }
 
     @Test
-    fun startAdd() {
-        val inputStream = "add my task\nexit".byteInputStream()
-        val programStarter = ProgramStarter(fileName)
+    fun startEnterTest() {
+        val inputStream =
+            "\nexit\n".byteInputStream()
+        System.setIn(inputStream)
         programStarter.start()
+        val outputText = outputStream.toString().removePrefix(helpText).trim()
         inputStream.close()
-        val out = outContent.toString()
-        val expect = "write command:>write command:>"
-        assertEquals(expect, out)
+        assertEquals("write command:>write command:>", outputText)
     }
 
     @Test
-    fun startEmpty() {
-        val inputStream = "\nexit".byteInputStream()
-        val programStarter = ProgramStarter("test-todo-list.json")
-        programStarter.start()
+    fun startCloseStreamTest() {
+        val inputStream = "".byteInputStream()
+        System.setIn(inputStream)
         inputStream.close()
-        val out = outContent.toString()
-        val expect = "write command:>write command:>"
-        assertEquals(expect, out)
+        programStarter.start()
+        val outputText = outputStream.toString().removePrefix(helpText).trim()
+        assertEquals("write command:>", outputText)
+    }
+
+    @Test
+    fun startExitTest() {
+        val inputStream =
+            "exit\n".byteInputStream()
+        System.setIn(inputStream)
+        programStarter.start()
+        val outputText = outputStream.toString().removePrefix(helpText).trim()
+        inputStream.close()
+        assertEquals("write command:>", outputText)
+    }
+
+    @Test
+    fun startSuccessTest() {
+        every { handler.handle(any(), taskFileManager) } returns ExecutionResult.SUCCESS
+        val inputStream =
+            "list\nexit\n".byteInputStream()
+        System.setIn(inputStream)
+        programStarter.start()
+        val outputText = outputStream.toString().removePrefix(helpText).trim()
+        inputStream.close()
+        assertEquals("write command:>write command:>write command:>", outputText)
+    }
+
+    @Test
+    fun startUnknownCommandTest() {
+        every { handler.handle(any(), taskFileManager) } returns ExecutionResult.UNKNOWN_COMMAND
+        val inputStream =
+            "abracadabra\nexit\n".byteInputStream()
+        System.setIn(inputStream)
+        programStarter.start()
+        val outputText = outputStream.toString().replaceFirst(helpText,"").trim()
+        inputStream.close()
+        assertEquals("write command:>write command:>write command:>", outputText)
     }
 
     @AfterAll
-    fun restoreStreams(){
-        System.setOut(originalOut)
-        val file = File(fileName)
-        file.delete()
+    fun setOriginalIn() {
+        System.setIn(originalIn)
     }
+
+
 }

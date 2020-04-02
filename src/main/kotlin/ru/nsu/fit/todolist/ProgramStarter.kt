@@ -1,27 +1,29 @@
 package ru.nsu.fit.todolist
 
 import ru.nsu.fit.todolist.handlers.HelpHandler
-import java.io.InputStream
-import java.util.*
 
-class ProgramStarter(fileName: String = "todo-list.json") {
-    private val taskFileManager = TaskFileManager(fileName)
-    private val commandRunner = HandlerFactory()
+class ProgramStarter(
+    private val taskFileManager: TaskFileManager,
+    private val handlerFactory: HandlerFactory
+) {
 
     fun start() {
         HelpHandler().handle(Command("help", ""), taskFileManager)
         while (true) {
             print("write command:>")
             val line = readLine()
-            val command = parseCommand(line?:"") ?: continue
-            val handler = commandRunner.getHandler(command)
+            line ?: break //check close stream
+            val command = parseCommand(line) ?: continue
+            val handler = handlerFactory.getHandler(command)
 
             val executionResult = handler.handle(command, taskFileManager)
 
             if (executionResult == ExecutionResult.EXIT) {
                 break
             }
-            if (executionResult != ExecutionResult.SUCCESS) {
+            if (executionResult != ExecutionResult.SUCCESS
+                && executionResult != ExecutionResult.UNKNOWN_COMMAND
+            ) {
                 println(executionResult.text)
             }
         }
@@ -43,5 +45,4 @@ class ProgramStarter(fileName: String = "todo-list.json") {
             )
         }
     }
-
 }

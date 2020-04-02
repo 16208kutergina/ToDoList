@@ -21,10 +21,11 @@ class HelpHandler : Handler {
 
 
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
-        println(helpText)
         if (command.nameCommand != "help") {
-        return ExecutionResult.UNKNOWN_COMMAND
+            println("${ExecutionResult.UNKNOWN_COMMAND.text}\n$helpText")
+            return ExecutionResult.UNKNOWN_COMMAND
         }
+        println(helpText)
         return ExecutionResult.SUCCESS
     }
 }

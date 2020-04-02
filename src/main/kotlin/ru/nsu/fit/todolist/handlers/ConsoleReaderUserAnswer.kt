@@ -1,20 +1,18 @@
 package ru.nsu.fit.todolist.handlers
 
-import java.util.*
-
-class ConsoleReaderUserAnswer {
+public class ConsoleReaderUserAnswer {
 
     fun askUserForContinue(): UserAction {
         println("Write \"next\" or \"stop\"")
         var nextLine = readLine()
-        while (nextLine != "next" && nextLine != "stop") {
+        while (nextLine != "next" && nextLine != "stop" && nextLine != "") {
             println("Write \"next\" or \"stop\"")
-            nextLine = readLine()
+            nextLine = readLine()?:break
         }
-        return if (nextLine == "next") {
-            UserAction.NEXT
-        } else {
+        return if (nextLine == "stop") {
             UserAction.STOP
+        } else {
+            UserAction.NEXT
         }
     }
 }

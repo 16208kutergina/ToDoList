@@ -9,7 +9,6 @@ class TaskFileManager(private var fileName: String) {
     private val gson = Gson()
     private lateinit var scanner: Scanner
 
-
     private fun replaceFile(nameTmpFile: String) {
         val file = File(fileName)
         val tmpFile = File(nameTmpFile)
@@ -32,7 +31,7 @@ class TaskFileManager(private var fileName: String) {
         scanner = Scanner(file)
     }
 
-    fun getTaskSeq(): Sequence<Task> {
+    fun getTaskSequence(): Sequence<Task> {
         return generateSequence {
             readNextTask()
         }
@@ -40,14 +39,10 @@ class TaskFileManager(private var fileName: String) {
 
     private fun readNextTask(): Task? {
         var task: Task? = null
-        try {
             if (scanner.hasNext()) {
                 val nextJson = scanner.nextLine()
                 task = gson.fromJson(nextJson, Task::class.java)
             }
-        } catch (e: IllegalStateException) {
-            //залогировать
-        }
         return task
     }
 
