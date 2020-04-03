@@ -1,7 +1,6 @@
 package ru.nsu.fit.todolist.handlers
 
 import ru.nsu.fit.todolist.*
-import java.io.IOException
 
 class AddHandler : Handler {
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {

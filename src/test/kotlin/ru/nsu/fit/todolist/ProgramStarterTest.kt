@@ -5,6 +5,7 @@ import io.mockk.mockk
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import ru.nsu.fit.todolist.handlers.ConsoleOutputTest
+import ru.nsu.fit.todolist.handlers.helpText
 
 internal class ProgramStarterTest : ConsoleOutputTest() {
     private val taskFileManager = mockk<TaskFileManager>()
@@ -12,18 +13,6 @@ internal class ProgramStarterTest : ConsoleOutputTest() {
     private val programStarter = ProgramStarter(taskFileManager, handlerFactory)
     private val originalIn = System.`in`
     private val handler = mockk<Handler>()
-    private val helpText = """
-    help - print instruction            
-    add <name task> - add new task
-    done <number_task1 number_task2 ...> - mark tasks DONE
-    delete <number_task1 number_task2 ...> - delete tasks
-    list        - print all tasks
-         -done  - print DONE tasks
-         -todo  - print TODO tasks
-                next - next part(10) tasks
-                stop - return to main console
-    exit - exit from application
-            """.trimIndent()
 
     @BeforeAll
     fun setHandle() {

@@ -1,16 +1,12 @@
 package ru.nsu.fit.todolist.handlers
 
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import ru.nsu.fit.todolist.Command
 import ru.nsu.fit.todolist.ExecutionResult
 import ru.nsu.fit.todolist.TaskFileManager
-import java.io.IOException
 
 internal class DoneHandlerTest {
     private val doneHandler = DoneHandler()
