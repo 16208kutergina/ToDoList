@@ -1,13 +1,12 @@
 package ru.nsu.fit.todolist.handlers
 
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import ru.nsu.fit.todolist.*
-import java.io.IOException
+import ru.nsu.fit.todolist.Command
+import ru.nsu.fit.todolist.ExecutionResult
+import ru.nsu.fit.todolist.TaskFileManager
 
 internal class AddHandlerTest {
     private val addHandler = AddHandler()
@@ -23,7 +22,7 @@ internal class AddHandlerTest {
     @Test
     fun handleFileProblemTest() {
         val taskFileManager = mockk<TaskFileManager>()
-        every { taskFileManager.write(any()) }.throws(IOException())
+        every { taskFileManager.write(any()) } returns ExecutionResult.FILE_PROBLEM
         val command = Command("add", "task")
         val executionResult = addHandler.handle(command, taskFileManager)
         assertEquals(ExecutionResult.FILE_PROBLEM, executionResult)
@@ -34,7 +33,7 @@ internal class AddHandlerTest {
         val taskFileManager = mockk<TaskFileManager>()
         every {
             taskFileManager.write(any())
-        } just Runs
+        } returns ExecutionResult.SUCCESS
         val command = Command("add", "task")
         val commandExceptions = addHandler.handle(command, taskFileManager)
 

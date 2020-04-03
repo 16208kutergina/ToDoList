@@ -8,20 +8,20 @@ import java.io.IOException
 
 class DeleteHandler : Handler {
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
-        try {
+        return try {
             val arguments = command.arguments
                 .split(" ")
                 .map { it.toInt() }
-            if (arguments.isNotEmpty())
-                return taskFileManager.delete(
-                    arguments,
-                    ExecutionResult.FILE_PROBLEM,
-                    ExecutionResult.SUCCESS
+            if (arguments.isNotEmpty()) {
+                taskFileManager.delete(
+                    arguments
                 )
+            } else {
+                ExecutionResult.SUCCESS
+            }
         } catch (e: NumberFormatException) {
-            return ExecutionResult.WRONG_FORMAT_ARGUMENTS
+            ExecutionResult.WRONG_FORMAT_ARGUMENTS
         }
-        return ExecutionResult.SUCCESS
     }
 
 }

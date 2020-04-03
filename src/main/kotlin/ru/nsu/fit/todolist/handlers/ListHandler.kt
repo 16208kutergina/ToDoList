@@ -8,13 +8,11 @@ class ListHandler(private val consoleReaderListTask: ConsoleReaderUserAnswer = C
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
         val filterMode = determineFilterMode(command)
             ?: return ExecutionResult.UNKNOWN_MODE_SORT
-        return taskFileManager.read(ExecutionResult.FILE_PROBLEM,
-            { userDialog(taskFileManager, filterMode) })
+        return taskFileManager.getTasks { sequence -> userDialog(filterMode, sequence)}
     }
 
-    private fun userDialog(taskFileManager: TaskFileManager, filterMode: FilterComposed): ExecutionResult {
-        val seq = taskFileManager.getTaskSequence()
-        val listTask = getFilteredList(seq, filterMode).iterator()
+    private fun userDialog(filterMode: FilterComposed, sequence: Sequence<Task>): ExecutionResult {
+        val listTask = getFilteredList(sequence, filterMode).iterator()
         while (listTask.hasNext()) {
             printListTask(listTask.next())
             if (!listTask.hasNext()) {

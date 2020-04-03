@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import ru.nsu.fit.todolist.*
-import java.io.IOException
 
 internal class ListHandlerTest : ConsoleOutputTest() {
     private val consoleReaderUserAnswer = mockk<ConsoleReaderUserAnswer>()
@@ -28,10 +27,9 @@ internal class ListHandlerTest : ConsoleOutputTest() {
     )
 
     @BeforeAll
-    fun before(){
-        every { taskFileManager.getTaskSequence() } returns originalList.asSequence()
-        every { taskFileManager.openForRead() } just Runs
-        every { taskFileManager.closeForRead() } just Runs
+    fun before() {
+        val slot: CapturingSlot<(Sequence<Task>) -> ExecutionResult> = CapturingSlot()
+        every { taskFileManager.getTasks(capture(slot)) }.answers { slot.captured.invoke(originalList.asSequence()) }
     }
 
     @Test
@@ -44,7 +42,9 @@ internal class ListHandlerTest : ConsoleOutputTest() {
     @Test
     fun handleFileProblem() {
         val command = Command("list", "")
-        every { taskFileManager.openForRead() } throws IOException()
+        val slot: CapturingSlot<(Sequence<Task>) -> ExecutionResult> = CapturingSlot()
+        every { taskFileManager.getTasks(capture(slot)) } returns ExecutionResult.FILE_PROBLEM
+        every { consoleReaderUserAnswer.askUserForContinue() } returns UserAction.NEXT
         val executionResult = listHandler.handle(command, taskFileManager)
         assertEquals(ExecutionResult.FILE_PROBLEM, executionResult)
     }
@@ -53,7 +53,6 @@ internal class ListHandlerTest : ConsoleOutputTest() {
     fun testList() {
         val command = Command("list", "")
         every { consoleReaderUserAnswer.askUserForContinue() } returns UserAction.NEXT
-
         val executionResult = listHandler.handle(command, taskFileManager)
 
         val expected = """
@@ -79,7 +78,6 @@ internal class ListHandlerTest : ConsoleOutputTest() {
     fun testListStop() {
         val command = Command("list", "")
         every { consoleReaderUserAnswer.askUserForContinue() } returns UserAction.STOP
-
         val executionResult = listHandler.handle(command, taskFileManager)
 
         val expected = """

@@ -1,13 +1,13 @@
 package ru.nsu.fit.todolist.handlers
 
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import ru.nsu.fit.todolist.*
+import ru.nsu.fit.todolist.Command
+import ru.nsu.fit.todolist.ExecutionResult
+import ru.nsu.fit.todolist.TaskFileManager
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class DeleteHandlerTest {
@@ -24,7 +24,7 @@ internal class DeleteHandlerTest {
     @Test
     fun handleCorrectArguments() {
         val taskFileManager = mockk<TaskFileManager>()
-        every { taskFileManager.delete(any()) } just Runs
+        every { taskFileManager.delete(any()) } returns ExecutionResult.SUCCESS
         val command = Command("delete", "2 3")
         val executionResult = deleteHandler.handle(command, taskFileManager)
         assertEquals(ExecutionResult.SUCCESS, executionResult)

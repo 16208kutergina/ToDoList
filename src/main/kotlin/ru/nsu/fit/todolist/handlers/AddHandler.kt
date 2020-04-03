@@ -9,6 +9,6 @@ class AddHandler : Handler {
             return ExecutionResult.UNNAMED_TASK
         }
         val task = Task(StatusTask.TODO, command.arguments)
-        return taskFileManager.write(task, ExecutionResult.FILE_PROBLEM, ExecutionResult.SUCCESS)
+        return taskFileManager.write(task)
     }
 }

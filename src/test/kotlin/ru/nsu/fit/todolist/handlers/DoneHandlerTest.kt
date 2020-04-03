@@ -26,7 +26,7 @@ internal class DoneHandlerTest {
     @Test
     fun handleFileProblemTest() {
         val command = Command("done", "1 2")
-        every { taskFileManager.markDone(any()) } throws IOException()
+        every { taskFileManager.markDone(any()) } returns ExecutionResult.FILE_PROBLEM
         val executionResult = doneHandler.handle(command, taskFileManager)
         assertEquals(ExecutionResult.FILE_PROBLEM, executionResult)
     }
@@ -34,7 +34,7 @@ internal class DoneHandlerTest {
     @Test
     fun handleSuccessTest() {
         val command = Command("done", "1 2")
-        every { taskFileManager.markDone(any()) } just Runs
+        every { taskFileManager.markDone(any()) } returns  ExecutionResult.SUCCESS
         val executionResult = doneHandler.handle(command, taskFileManager)
         assertEquals(ExecutionResult.SUCCESS, executionResult)
     }
