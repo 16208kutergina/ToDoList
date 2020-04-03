@@ -10,7 +10,7 @@ abstract class Filter {
 }
 
 class FilterComposed : Filter() {
-    private val listFilters = LinkedList<Filter>()
+    private val listFilters = HashSet<Filter>()
 
     override fun isAccept(task: Task): Boolean {
         return listFilters.any {
