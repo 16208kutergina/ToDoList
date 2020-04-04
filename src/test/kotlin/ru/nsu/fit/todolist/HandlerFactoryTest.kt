@@ -7,7 +7,7 @@ import ru.nsu.fit.todolist.handlers.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class HandlerFactoryTest {
-    private val handlerFactory = HandlerFactory()
+    private val handlerFactory = HandlerFactory
 
     @Test
     fun addTest() {

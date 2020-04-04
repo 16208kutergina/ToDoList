@@ -99,6 +99,34 @@ internal class ListHandlerTest : ConsoleOutputTest() {
     }
 
     @Test
+    fun testCount() {
+        val command = Command("list", "count=11")
+        every { consoleReaderUserAnswer.askUserForContinue() } returns UserAction.STOP
+        val executionResult = listHandler.handle(command, taskFileManager)
+
+        val expected = """
+        1. TODO: task1
+        2. TODO: task2
+        3. TODO: task3
+        4. TODO: task4
+        5. TODO: task5
+        6. DONE: task6
+        7. DONE: task7
+        8. DONE: task8
+        9. DONE: task9
+        10. DONE: task10
+        11. DONE: task11
+        """.trimIndent()
+        assertEquals(expected, outputStream.toString().trimIndent())
+        assertEquals(ExecutionResult.SUCCESS, executionResult)
+
+        val returnDefault = Command("list", "count=10")
+        listHandler.handle(returnDefault, taskFileManager)
+
+
+    }
+
+    @Test
     fun testListStop() {
         val command = Command("list", "")
         every { consoleReaderUserAnswer.askUserForContinue() } returns UserAction.STOP

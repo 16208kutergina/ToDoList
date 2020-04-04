@@ -11,8 +11,7 @@ class ProgramStarter(
         HelpHandler().handle(Command("help", ""), taskFileManager)
         while (true) {
             print("write command:>")
-            val line = readLine()
-            line ?: break //check close stream
+            val line = readLine() ?: break //check close stream
             val command = parseCommand(line) ?: continue
             val handler = handlerFactory.getHandler(command)
 

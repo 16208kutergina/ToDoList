@@ -3,15 +3,25 @@ package ru.nsu.fit.todolist.handlers
 import ru.nsu.fit.todolist.*
 
 class ListHandler(private val consoleReaderListTask: ConsoleReaderUserAnswer = ConsoleReaderUserAnswer()) : Handler {
-    private val countReadableTasks = 10
+    private var countReadableTasks = 10
     private var isAllListTask = false
 
     override fun handle(command: Command, taskFileManager: TaskFileManager): ExecutionResult {
         val arguments = command.arguments.split(" ").toMutableList()
+        setCountItemAtList(arguments)
         checkAllListTaskFilter(arguments)
         val filterMode = determineFilterMode(arguments)
             ?: return ExecutionResult.UNKNOWN_MODE_SORT
         return taskFileManager.getTasks { sequence -> userDialog(filterMode, sequence) }
+    }
+
+    private fun setCountItemAtList(arguments: MutableList<String>) {
+        val find = arguments.find { it.contains("count") }
+        arguments.remove(find)
+        val count = find?.split("=")?.last()?.toInt()
+        if (count != null) {
+            countReadableTasks = count
+        }
     }
 
     private fun checkAllListTaskFilter(arguments: MutableList<String>) {
@@ -52,7 +62,7 @@ class ListHandler(private val consoleReaderListTask: ConsoleReaderUserAnswer = C
                 }
                 filterComposed.add(filter)
             }
-        if(arguments.isEmpty()){
+        if (arguments.isEmpty()) {
             filterComposed.add(FilterAll())
         }
         return filterComposed

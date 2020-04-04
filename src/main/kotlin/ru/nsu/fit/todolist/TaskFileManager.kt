@@ -85,7 +85,7 @@ class TaskFileManager(private var fileName: String) {
     ): ExecutionResult {
         var tmpFileWriter: FileWriter? = null
         return try {
-            tmpFileWriter = FileWriter(nameTmpFile, true)
+            tmpFileWriter = FileWriter(nameTmpFile)
             openScannerForRead()
             var counterTask = 0
             var nextTaskJson: String
@@ -114,7 +114,7 @@ class TaskFileManager(private var fileName: String) {
     ): ExecutionResult {
         var tmpFileWriter: FileWriter? = null
         return try {
-            tmpFileWriter = FileWriter(nameTmpFile, true)
+            tmpFileWriter = FileWriter(nameTmpFile)
             openScannerForRead()
             var counterTask = 0
             while (scanner.hasNext()) {

@@ -4,7 +4,7 @@ class ConsoleReaderUserAnswer {
 
     fun askUserForContinue(): UserAction {
         println("Write \"next\" or \"stop\"")
-        var nextLine = readLine()
+        var nextLine = readLine()?:return UserAction.STOP
         while (nextLine != "next" && nextLine != "stop" && nextLine != "") {
             println("Write \"next\" or \"stop\"")
             nextLine = readLine()?:break
